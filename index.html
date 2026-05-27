@@ -20,7 +20,6 @@
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            /* 背景採用與截圖呼應的森林與陽光溫暖漸層 */
             background: linear-gradient(180deg, #b3e5fc 0%, #dcedc8 60%, #9fd3c7 100%);
             color: var(--wood-dark);
             margin: 0;
@@ -66,7 +65,6 @@
 
         .hidden { display: none !important; }
 
-        /* 輸入框與選擇選單 */
         input, select {
             width: 100%;
             padding: 12px;
@@ -81,7 +79,6 @@
             background: #fffbf0;
         }
 
-        /* 遊戲風格立體按鈕 */
         .game-btn {
             width: 100%;
             background: #4fc3f7;
@@ -106,11 +103,9 @@
         .game-btn.yellow-btn { background: #ffca3a; color: var(--wood-dark); }
         .game-btn.grey-btn { background: #ccc; box-shadow: 0 4px 0px #888; }
 
-        /* 🌲 完美的貓咪造咖森林大廳背景 🌲 */
+        /* 🌲 貓咪造咖風大廳背景 🌲 */
         .game-lobby {
-            /* 直接載入帶有蘑菇屋與陽光森林的正式場景底圖 */
-            background: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitwD7gYfQ2wI74L0nreR0tUbyoI9XyY1O6iF_6K0M_wz_H3t2w5N4Z7oPjR_N6B9K1_D3L4z8M5X2C1V3B5N7M_vN9M1_X5Z3C2B1N_vB9N/s1600/bg_forest_mushroom.png') no-repeat center bottom;
-            background-size: cover;
+            background: linear-gradient(180deg, #e3f2fd 0%, #fff9c4 60%, #c5e1a5 100%);
             border: 4px solid var(--wood-dark);
             border-radius: 24px;
             height: 240px;
@@ -120,7 +115,12 @@
             box-shadow: inset 0 6px 10px rgba(0,0,0,0.15);
         }
 
-        /* 像素角色本體：包含平滑移動與踏步步行效果 */
+        /* 模擬背景截圖的蘑菇屋與小樹裝飾 */
+        .deco-house { position: absolute; left: 35%; bottom: 65px; font-size: 70px; filter: drop-shadow(0 4px 0 var(--wood-dark)); }
+        .deco-tree { position: absolute; left: 10%; bottom: 45px; font-size: 45px; }
+        .deco-bush { position: absolute; right: 10%; bottom: 40px; font-size: 40px; }
+
+        /* 角色本體與步行動態 */
         .avatar {
             position: absolute;
             display: flex;
@@ -130,35 +130,28 @@
             z-index: 10;
         }
 
-        /* 讀取精緻的像素角色切片圖 */
         .sprite-img {
-            width: 54px;
-            height: 54px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            font-size: 42px;
             animation: gameSpriteWalk 0.4s infinite alternate ease-in-out;
-            image-rendering: pixelated; /* 讓像素圖保持清晰不模糊 */
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.1));
         }
 
-        /* 經典日系像素踏步動畫 */
         @keyframes gameSpriteWalk {
             from { transform: translateY(0) scaleY(1); }
-            to { transform: translateY(-5px) scaleY(0.96); }
+            to { transform: translateY(-6px) scaleY(0.95); }
         }
 
-        /* 角色腳底的像素陰影 */
         .cat-shadow {
-            width: 32px;
+            width: 30px;
             height: 6px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(101, 67, 33, 0.25);
             border-radius: 50%;
-            margin-top: -2px;
+            margin-top: -4px;
             margin-bottom: 4px;
         }
 
         .char-tag {
-            background: rgba(255, 253, 249, 0.9);
+            background: rgba(255, 253, 249, 0.95);
             color: var(--wood-dark);
             padding: 2px 6px;
             border-radius: 8px;
@@ -203,7 +196,7 @@
         <div class="game-header">
             <h1>喵喵秘密基地 🐾</h1>
         </div>
-        <p style="text-align: center; font-weight: bold; color: #654321; margin-top: -5px;">🍄 像素風全新夥伴開跑！ 🍄</p>
+        <p style="text-align: center; font-weight: bold; color: #654321; margin-top: -5px;">🍄 像素風新夥伴全體登陸！ 🍄</p>
         <input type="email" id="email" placeholder="請輸入登入信箱">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button class="game-btn pink-btn" onclick="login()">進入像素大廳</button>
@@ -216,15 +209,19 @@
         
         <div class="flex-row">
             <select id="char-select" onchange="updateCharacter()">
-                <option value="orange_cat">🐾 領巾橘貓</option>
-                <option value="shiba">👮 警帽柴犬</option>
-                <option value="swallow">🎒 包包家燕</option>
-                <option value="shrimp">🍳 圍裙炸蝦</option>
+                <option value="🐱">🐾 領巾橘貓</option>
+                <option value="🐕">👮 警帽柴犬</option>
+                <option value="🐦">🎒 包包家燕</option>
+                <option value="🍤">🍳 圍裙炸蝦</option>
             </select>
             <button class="game-btn yellow-btn" onclick="moveRandomly()">在草地散步 🐾</button>
         </div>
 
-        <div class="game-lobby" id="lobby"></div>
+        <div class="game-lobby" id="lobby">
+            <div class="deco-house">🍄</div>
+            <div class="deco-tree">🌲</div>
+            <div class="deco-bush">🌳</div>
+        </div>
 
         <div class="box-title">💬 即時對話</div>
         <div class="display-area" id="chat-area"></div>
@@ -245,17 +242,9 @@
 </div>
 
 <script>
-    // 四個經典像素角色的高清提取切片圖網址庫
-    const spriteUrls = {
-        orange_cat: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg4r1Mv4x1B_7w7i8P8mK7n9B_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_orange_cat.png',
-        shiba: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7b3N1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_shiba.png',
-        swallow: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9M1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_swallow.png',
-        shrimp: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N/s1600/sprite_shrimp.png'
-    };
-
-    // Firebase 配置
+    // 修正過後的完整 Firebase 憑證設定
     const firebaseConfig = {
-        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs",
+        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs8",
         authDomain: "moew-14789.firebaseapp.com",
         projectId: "moew-14789",
         storageBucket: "moew-14789.firebasestorage.app",
@@ -301,17 +290,17 @@
 
     function updateCharacter() {
         if (!currentUser) return;
-        const charKey = document.getElementById('char-select').value;
-        // 限制散步隨機座標，確保他們完美的站在綠色草地上
+        const charIcon = document.getElementById('char-select').value;
+        // 限制散步隨機座標，確保他們安穩的站在底部的綠色草皮區
         const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 20) + 65; // 65% ~ 85% 正好是底部的草皮區
-        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: charKey, x: x, y: y });
+        const y = Math.floor(Math.random() * 15) + 65; 
+        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: charIcon, x: x, y: y });
     }
 
     function moveRandomly() {
         if (!currentUser) return;
         const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 20) + 65;
+        const y = Math.floor(Math.random() * 15) + 65;
         database.ref('lobby/' + currentUser.uid).update({ x: x, y: y });
     }
 
@@ -332,7 +321,8 @@
     function listenToFirebase() {
         database.ref('lobby').on('value', snapshot => {
             const lobby = document.getElementById('lobby');
-            lobby.innerHTML = ''; // 清空舊畫面
+            // 清除舊的角色圖層，保留背景裝飾
+            lobby.querySelectorAll('.avatar').forEach(el => el.remove());
             const data = snapshot.val();
             if (data) {
                 Object.keys(data).forEach(uid => {
@@ -342,11 +332,8 @@
                     div.style.left = player.x + '%';
                     div.style.top = player.y + '%';
                     
-                    // 根據玩家選擇的 key 安全取得圖片網址，若無則預設為橘貓
-                    const imgUrl = spriteUrls[player.icon] || spriteUrls['orange_cat'];
-
                     div.innerHTML = `
-                        <div class="sprite-img" style="background-image: url('${imgUrl}');"></div>
+                        <div class="sprite-img">${player.icon}</div>
                         <div class="cat-shadow"></div>
                         <span class="char-tag">${player.name}</span>
                     `;
