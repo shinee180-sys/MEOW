@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>貓咪造咖風 - 核心設定檢查清單 🐾</title>
+    <title>貓咪造咖風秘密基地 🐾</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,40 +16,38 @@
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            /* 模擬童話森林與天空的漸層背景 */
+            /* 模擬童話森林的漸層背景 */
             background: linear-gradient(180deg, #b3e5fc 0%, #dcedc8 60%, #9fd3c7 100%);
-            color: var(--wood-dark);
             margin: 0;
-            padding: 20px 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* 遊戲主視窗：日系手札厚實巧克力色邊框 */
-        .checklist-container {
+        /* 遊戲主視窗：做成精緻的日系手札厚邊框 */
+        .game-window {
             width: 95%;
-            max-width: 600px;
+            max-width: 480px;
             background: #fffdf9;
             border: 6px solid var(--wood-dark);
             border-radius: 32px;
             box-shadow: 0 16px 0px rgba(101, 67, 33, 0.2), 0 20px 30px rgba(0,0,0,0.15);
-            padding: 25px;
+            padding: 24px;
             box-sizing: border-box;
             position: relative;
         }
 
-        /* 頂部遊戲大招牌 */
+        /* 頂部招牌 */
         .game-header {
             text-align: center;
             background: var(--ui-pink);
             border: 4px solid var(--wood-dark);
             border-radius: 20px;
-            padding: 12px;
-            margin-top: -50px;
-            margin-bottom: 25px;
+            padding: 10px;
+            margin-top: -45px;
             box-shadow: 0 6px 0px var(--wood-dark);
         }
 
@@ -60,126 +58,181 @@
             text-shadow: 2px 2px 0px white;
         }
 
-        .checklist {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* 檢查卡片：做成日系遊戲精緻木牌風格 */
-        .check-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            background: #fffbf0;
-            padding: 15px;
-            border-radius: 20px;
-            border: 4px solid var(--wood-dark);
-            box-shadow: 0 6px 0px rgba(101, 67, 33, 0.1);
-            position: relative;
-        }
-
-        /* 卡片左側裝飾小圖章 */
-        .check-icon {
-            font-size: 26px;
-            margin-right: 15px;
-            margin-top: -2px;
-            filter: drop-shadow(1px 1px 0px var(--wood-dark));
-        }
-
-        .check-text h2 {
-            margin: 0 0 8px;
-            font-size: 18px;
-            color: var(--wood-dark);
-            text-shadow: 1px 1px 0px white;
-        }
-
-        .check-text p {
-            margin: 0 0 6px 0;
-            font-size: 14px;
-            color: #555;
-            line-height: 1.5;
-            word-break: break-all;
-        }
-
-        /* 遊戲風藍色連結按鈕 */
-        .action-link {
-            display: inline-block;
+        /* 日系捲邊按鈕 */
+        .game-btn {
             background: #4fc3f7;
-            color: white !important;
-            border: 3px solid var(--wood-dark);
-            border-radius: 12px;
-            padding: 6px 14px;
-            font-size: 14px;
+            color: white;
+            border: 4px solid var(--wood-dark);
+            border-radius: 16px;
+            padding: 10px 20px;
+            font-size: 16px;
             font-weight: bold;
-            text-decoration: none;
+            cursor: pointer;
             box-shadow: 0 4px 0px var(--wood-dark);
-            margin-top: 5px;
             transition: all 0.1s ease;
+            white-space: nowrap;
         }
 
-        .action-link:active {
+        .game-btn:active {
             transform: translateY(4px);
             box-shadow: 0 0px 0px var(--wood-dark);
         }
 
-        /* 裝飾：漂浮的像素小橘貓 */
-        .decor-cat {
-            display: inline-block;
-            font-size: 36px;
-            animation: catBounce 0.6s infinite alternate;
-            vertical-align: middle;
+        .game-btn.pink-btn { background: #ff7096; }
+        .game-btn.yellow-btn { background: #ffca3a; color: var(--wood-dark); }
+
+        /* 夢幻遊戲大廳：模擬蘑菇屋與草地背景 */
+        .game-lobby {
+            background: linear-gradient(to bottom, #e3f2fd 0%, #fff9c4 70%, #c5e1a5 100%);
+            border: 4px solid var(--wood-dark);
+            border-radius: 24px;
+            height: 260px;
+            position: relative;
+            margin: 25px 0 15px 0;
+            overflow: hidden;
+            box-shadow: inset 0 8px 10px rgba(0,0,0,0.08);
         }
 
-        .cat-container {
-            text-align: center;
-            margin-top: 15px;
+        /* 裝飾用的小草叢與裝飾物 */
+        .deco-bush {
+            position: absolute;
+            bottom: 10px;
+            font-size: 24px;
+            opacity: 0.7;
         }
 
-        @keyframes catBounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-8px); }
+        /* 遊戲角色：加大並加上可愛的漂浮陰影 */
+        .avatar {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .cat-sprite {
+            font-size: 48px; /* 放大貓咪 */
+            animation: catWalk 0.6s infinite alternate;
+        }
+
+        /* 貓咪跳動動畫 */
+        @keyframes catWalk {
+            from { transform: translateY(0) scaleX(1); }
+            to { transform: translateY(-8px) scaleX(1.05); }
+        }
+
+        /* 貓咪腳底的像素陰影 */
+        .cat-shadow {
+            width: 30px;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 50%;
+            margin-top: -4px;
+            margin-bottom: 4px;
+        }
+
+        .char-tag {
+            background: white;
+            color: var(--wood-dark);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            border: 2px solid var(--wood-dark);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* 控制面板區塊 */
+        .control-panel {
+            background: #fff9e6;
+            border: 3px dashed var(--wood-dark);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        select {
+            background: white;
+            border: 3px solid var(--wood-dark);
+            border-radius: 12px;
+            padding: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--wood-dark);
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="checklist-container">
-        <div class="game-header">
-            <h1><span class="decor-cat">🐱</span> 秘密基地設定檢查清單 <span class="decor-cat">🍄</span></h1>
-        </div>
+<div class="game-window">
+    <div class="game-header">
+        <h1>我的貓咪造咖大廳 🍄</h1>
+    </div>
 
-        <ul class="checklist">
-            <li class="check-item">
-                <div class="check-icon">✔️</div>
-                <div class="check-text">
-                    <h2>檢查 API Key</h2>
-                    <p>確認網頁程式碼中 firebaseConfig 的 apiKey 是否準確無誤？注意大小寫！</p>
-                </div>
-            </li>
-            <li class="check-item">
-                <div class="check-icon">❔</div>
-                <div class="check-text">
-                    <h2>檢查 Google Cloud 金鑰限制</h2>
-                    <p>您的 apiKey 可能設定了限制。進入 Google Cloud「憑證」，編輯該金鑰，確認「應用程式限制」設為「無」，「API 限制」設為「不要限制金鑰」。</p>
-                    <p><a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="action-link">👉 [點此檢查金鑰限制] 🐾</a></p>
-                </div>
-            </li>
-            <li class="check-item">
-                <div class="check-icon">❔</div>
-                <div class="check-text">
-                    <h2>確認 API 已啟用</h2>
-                    <p>在 Google Cloud 控制台搜尋並啟用「Identity Toolkit API」（Firebase 驗證核心）與「Realtime Database API」。</p>
-                </div>
-            </li>
-        </ul>
+    <div class="game-lobby" id="lobby">
+        <span class="deco-bush" style="left: 15%; bottom: 40px;">🌳</span>
+        <span class="deco-bush" style="right: 10%; bottom: 35px;">🏡</span>
+        <span class="deco-bush" style="left: 45%; bottom: 15px;">🍄</span>
+        <span class="deco-bush" style="right: 35%; bottom: 50px;">🌻</span>
 
-        <div class="cat-container">
-            <span class="decor-cat" style="animation-delay: 0.2s;">🐈</span>
-            <span style="font-size: 14px; font-weight: bold; color: var(--wood-dark); margin: 0 10px;">橘貓幫你加油打氣中喵！</span>
-            <span class="decor-cat" style="animation-delay: 0.4s;">🐱</span>
+        <div class="avatar" id="player-cat" style="left: 40%; top: 45%;" onclick="catMeow()">
+            <span class="cat-sprite" id="current-emoji">🐱</span>
+            <div class="cat-shadow"></div>
+            <span class="char-tag" id="cat-status">流浪橘貓 (點我)</span>
         </div>
     </div>
+
+    <div class="control-panel">
+        <select id="char-select" onchange="changeCat()">
+            <option value="🐱">大橘貓 🐱</option>
+            <option value="🐈">三花貓 🐈</option>
+            <option value="🐈‍⬛">神祕黑貓 🐈‍⬛</option>
+            <option value="🦁">奶油獅 🦁</option>
+            <option value="🦊">大尾狐 🦊</option>
+        </select>
+        <button class="game-btn yellow-btn" onclick="walkAround()">在森林散步 🐾</button>
+    </div>
+</div>
+
+<script>
+    // 更換貓咪外觀
+    function changeCat() {
+        const selectedEmoji = document.getElementById('char-select').value;
+        document.getElementById('current-emoji').innerText = selectedEmoji;
+        document.getElementById('cat-status').innerText = "快樂散步中...";
+    }
+
+    // 讓貓咪在畫面裡隨機散步（平滑移動）
+    function walkAround() {
+        const cat = document.getElementById('player-cat');
+        
+        // 限制在草地上散步的範圍
+        const randomX = Math.floor(Math.random() * 70) + 5; // 5% ~ 75%
+        const randomY = Math.floor(Math.random() * 40) + 35; // 35% ~ 75% (草地在偏下方)
+
+        cat.style.left = randomX + '%';
+        cat.style.top = randomY + '%';
+        
+        const statusTxt = ["肚子餓了喵~", "這裡有蘑菇！", "陽光好舒服 ☀️", "抓蝴蝶！🦋"];
+        const randomStatus = statusTxt[Math.floor(Math.random() * statusTxt.length)];
+        document.getElementById('cat-status').innerText = randomStatus;
+    }
+
+    // 點擊貓咪的對話框特效
+    function catMeow() {
+        alert("😸 橘貓對你撒嬌：\n「喵嗚~ 謝謝你幫我換了這麼漂亮的森林大廳！這裡好舒服！」");
+        document.getElementById('cat-status').innerText = "最喜歡主人了 ❤️";
+    }
+
+    // 自動每隔 4 秒讓貓咪自己晃一下
+    setInterval(walkAround, 4000);
+</script>
 
 </body>
 </html>
