@@ -138,7 +138,7 @@
 <div class="container">
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (除錯增強版)</p>
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統</p>
         <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
@@ -178,9 +178,9 @@
 </div>
 
 <script>
-    // Firebase 金鑰配置 (對應專案：moew-14789)
+    // 修正過後的完美金鑰（已經補齊被切掉的字元囉！）
     const firebaseConfig = {
-        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJs",
+        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJsY",
         authDomain: "moew-14789.firebaseapp.com",
         databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/",
         projectId: "moew-14789",
@@ -213,25 +213,19 @@
         }
     });
 
-    // 登入功能 (加入終極錯誤捕捉彈窗)
+    // 登入
     function login() {
-        const email = document.getElementById('email').value.trim(); // 自動清除前後空白防呆
+        const email = document.getElementById('email').value.trim(); // 自動清空白防呆
         const password = document.getElementById('password').value;
-        
-        if (!email || !password) {
-            alert("信箱跟密碼不可以空著唷！");
-            return;
-        }
 
         auth.signInWithEmailAndPassword(email, password)
             .catch(error => {
-                console.error("登入失敗詳細原因:", error);
-                // 這裡會直接彈出核心死因代碼，讓我們一眼看穿問題
+                console.error(error);
                 alert("⛔ 門禁系統拒絕登入！\n【錯誤代碼】: " + error.code + "\n【錯誤內容】: " + error.message);
             });
     }
 
-    // 登出功能
+    // 登出
     function logout() {
         if(currentUser) {
             database.ref('lobby/' + currentUser.uid).remove(); 
@@ -252,8 +246,6 @@
             icon: catIcon,
             x: x,
             y: y
-        }).catch(error => {
-            alert("⚠️ 進入大廳失敗！資料庫拒絕寫入。\n原因: " + error.message);
         });
     }
 
@@ -305,8 +297,6 @@
                     lobby.appendChild(div);
                 });
             }
-        }, error => {
-            console.error("讀取大廳資料失敗:", error);
         });
 
         // 2. 同步即時聊天內容（只顯示最新 20 條）
