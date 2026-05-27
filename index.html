@@ -4,247 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>喵喵秘密基地 - 貓咪造咖聯名大廳 🐾</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=700&display=swap" rel="stylesheet">
-    
+    <!-- 引入 Firebase v9 Compat SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <style>
-        :root {
-            --wood-dark: #654321;
-            --wood-light: #e6b89c;
-            --ui-pink: #ffcad4;
-            --ui-yellow: #f7d6c8;
-        }
-
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background: linear-gradient(180deg, #b3e5fc 0%, #dcedc8 60%, #9fd3c7 100%);
-            color: var(--wood-dark);
-            margin: 0;
-            padding: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        /* 遊戲主視窗：日系粗邊框 */
-        .game-window {
-            width: 95%;
-            max-width: 480px;
-            background: #fffdf9;
-            border: 6px solid var(--wood-dark);
-            border-radius: 32px;
-            box-shadow: 0 16px 0px rgba(101, 67, 33, 0.2), 0 20px 30px rgba(0,0,0,0.15);
-            padding: 24px;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        /* 頂部遊戲大招牌 */
-        .game-header {
-            text-align: center;
-            background: var(--ui-pink);
-            border: 4px solid var(--wood-dark);
-            border-radius: 20px;
-            padding: 10px;
-            margin-top: -45px;
-            margin-bottom: 20px;
-            box-shadow: 0 6px 0px var(--wood-dark);
-        }
-
-        .game-header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--wood-dark);
-            text-shadow: 2px 2px 0px white;
-        }
-
-        .hidden { display: none !important; }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 3px solid var(--wood-dark);
-            border-radius: 14px;
-            box-sizing: border-box;
-            outline: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--wood-dark);
-            background: #fffbf0;
-        }
-
-        .game-btn {
-            width: 100%;
-            background: #4fc3f7;
-            color: white;
-            border: 4px solid var(--wood-dark);
-            border-radius: 16px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 5px 0px var(--wood-dark);
-            transition: all 0.1s ease;
-        }
-
-        .game-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0px var(--wood-dark);
-        }
-
-        .game-btn.pink-btn { background: #ff7096; }
-        .game-btn.yellow-btn { background: #ffca3a; color: var(--wood-dark); }
-        .game-btn.grey-btn { background: #ccc; box-shadow: 0 4px 0px #888; }
-
-        /* 🌲 貓咪造咖風大廳背景 🌲 */
-        .game-lobby {
-            background: linear-gradient(180deg, #e3f2fd 0%, #fff9c4 60%, #c5e1a5 100%);
-            border: 4px solid var(--wood-dark);
-            border-radius: 24px;
-            height: 240px;
-            position: relative;
-            margin: 15px 0;
-            overflow: hidden;
-            box-shadow: inset 0 6px 10px rgba(0,0,0,0.15);
-        }
-
-        /* 模擬背景截圖的蘑菇屋與小樹裝飾 */
-        .deco-house { position: absolute; left: 35%; bottom: 65px; font-size: 70px; filter: drop-shadow(0 4px 0 var(--wood-dark)); }
-        .deco-tree { position: absolute; left: 10%; bottom: 45px; font-size: 45px; }
-        .deco-bush { position: absolute; right: 10%; bottom: 40px; font-size: 40px; }
-
-        /* 角色本體與步行動態 */
-        .avatar {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: 10;
-        }
-
-        .sprite-img {
-            font-size: 42px;
-            animation: gameSpriteWalk 0.4s infinite alternate ease-in-out;
-            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.1));
-        }
-
-        @keyframes gameSpriteWalk {
-            from { transform: translateY(0) scaleY(1); }
-            to { transform: translateY(-6px) scaleY(0.95); }
-        }
-
-        .cat-shadow {
-            width: 30px;
-            height: 6px;
-            background: rgba(101, 67, 33, 0.25);
-            border-radius: 50%;
-            margin-top: -4px;
-            margin-bottom: 4px;
-        }
-
-        .char-tag {
-            background: rgba(255, 253, 249, 0.95);
-            color: var(--wood-dark);
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-size: 11px;
-            border: 2px solid var(--wood-dark);
-            font-weight: bold;
-            white-space: nowrap;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .box-title { 
-            font-size: 16px; 
-            margin: 15px 0 5px 0; 
-            font-weight: bold; 
-            color: var(--wood-dark); 
-            text-shadow: 1px 1px 0px white;
-        }
-        
-        .display-area {
-            height: 110px;
-            border: 3px solid var(--wood-dark);
-            border-radius: 14px;
-            padding: 10px;
-            overflow-y: auto;
-            background: #fffbf5;
-            margin-bottom: 8px;
-            box-shadow: inset 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .msg { margin-bottom: 6px; font-size: 14px; word-break: break-all; color: #55433c; }
-        .flex-row { display: flex; gap: 8px; align-items: center; }
-        .flex-row input { margin: 0; }
-        .flex-row .game-btn { width: auto; white-space: nowrap; margin: 0; padding: 10px 18px; font-size: 14px; }
-        .flex-row select { margin: 0; width: 45%; }
+        body { font-family: '微軟正黑體', sans-serif; background: #dcedc8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-window { width: 90%; max-width: 400px; background: white; border: 5px solid #654321; border-radius: 20px; padding: 20px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px solid #654321; border-radius: 10px; }
+        .game-btn { background: #ff7096; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="game-window">
-    
-    <div id="auth-section">
-        <div class="game-header">
-            <h1>喵喵秘密基地 🐾</h1>
-        </div>
-        <p style="text-align: center; font-weight: bold; color: #654321; margin-top: -5px;">🍄 像素風新夥伴全體登陸！ 🍄</p>
-        <input type="email" id="email" placeholder="請輸入登入信箱">
-        <input type="password" id="password" placeholder="請輸入密碼">
-        <button class="game-btn pink-btn" onclick="login()">進入像素大廳</button>
-    </div>
-
-    <div id="main-section" class="hidden">
-        <div class="game-header">
-            <h1>秘密基地大廳 🏡</h1>
-        </div>
-        
-        <div class="flex-row">
-            <select id="char-select" onchange="updateCharacter()">
-                <option value="🐱">🐾 領巾橘貓</option>
-                <option value="🐕">👮 警帽柴犬</option>
-                <option value="🐦">🎒 包包家燕</option>
-                <option value="🍤">🍳 圍裙炸蝦</option>
-            </select>
-            <button class="game-btn yellow-btn" onclick="moveRandomly()">在草地散步 🐾</button>
-        </div>
-
-        <div class="game-lobby" id="lobby">
-            <div class="deco-house">🍄</div>
-            <div class="deco-tree">🌲</div>
-            <div class="deco-bush">🌳</div>
-        </div>
-
-        <div class="box-title">💬 即時對話</div>
-        <div class="display-area" id="chat-area"></div>
-        <div class="flex-row">
-            <input type="text" id="chat-input" placeholder="對大家喵一聲...">
-            <button class="game-btn" onclick="sendChat()">傳送</button>
-        </div>
-
-        <div class="box-title">📌 貓咪留言板</div>
-        <div class="display-area" id="board-area"></div>
-        <div class="flex-row">
-            <input type="text" id="board-input" placeholder="留下小紙條...">
-            <button class="game-btn pink-btn" onclick="sendBoard()">留言</button>
-        </div>
-        
-        <button class="game-btn grey-btn" onclick="logout()" style="padding: 8px; margin-top: 20px;">離開基地</button>
-    </div>
+<div class="game-window" id="auth-section">
+    <h1>喵喵秘密基地 🐾</h1>
+    <input type="email" id="email" placeholder="請輸入登入信箱">
+    <input type="password" id="password" placeholder="請輸入密碼">
+    <button class="game-btn" onclick="login()">進入像素大廳</button>
 </div>
 
 <script>
-    // 修正過後的完整 Firebase 憑證設定
+    // 這次是正確的，請直接覆蓋
     const firebaseConfig = {
-        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs8",
+        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
         projectId: "moew-14789",
         storageBucket: "moew-14789.firebasestorage.app",
@@ -254,113 +38,13 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
-
-    let currentUser = null;
-    let myNickname = "";
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            myNickname = user.email.split('@')[0];
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('main-section').classList.remove('hidden');
-            updateCharacter(); 
-            listenToFirebase(); 
-        } else {
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('main-section').classList.add('hidden');
-        }
-    });
-
+    
     function login() {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(email, password)
-            .catch(error => {
-                alert("⛔ 門禁系統錯誤: " + error.message);
-            });
-    }
-
-    function logout() {
-        if(currentUser) { database.ref('lobby/' + currentUser.uid).remove(); }
-        auth.signOut();
-    }
-
-    function updateCharacter() {
-        if (!currentUser) return;
-        const charIcon = document.getElementById('char-select').value;
-        // 限制散步隨機座標，確保他們安穩的站在底部的綠色草皮區
-        const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 15) + 65; 
-        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: charIcon, x: x, y: y });
-    }
-
-    function moveRandomly() {
-        if (!currentUser) return;
-        const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 15) + 65;
-        database.ref('lobby/' + currentUser.uid).update({ x: x, y: y });
-    }
-
-    function sendChat() {
-        const text = document.getElementById('chat-input').value;
-        if (!text.trim()) return;
-        database.ref('chat').push({ name: myNickname, text: text });
-        document.getElementById('chat-input').value = '';
-    }
-
-    function sendBoard() {
-        const text = document.getElementById('board-input').value;
-        if (!text.trim()) return;
-        database.ref('board').push({ name: myNickname, text: text });
-        document.getElementById('board-input').value = '';
-    }
-
-    function listenToFirebase() {
-        database.ref('lobby').on('value', snapshot => {
-            const lobby = document.getElementById('lobby');
-            // 清除舊的角色圖層，保留背景裝飾
-            lobby.querySelectorAll('.avatar').forEach(el => el.remove());
-            const data = snapshot.val();
-            if (data) {
-                Object.keys(data).forEach(uid => {
-                    const player = data[uid];
-                    const div = document.createElement('div');
-                    div.className = 'avatar';
-                    div.style.left = player.x + '%';
-                    div.style.top = player.y + '%';
-                    
-                    div.innerHTML = `
-                        <div class="sprite-img">${player.icon}</div>
-                        <div class="cat-shadow"></div>
-                        <span class="char-tag">${player.name}</span>
-                    `;
-                    lobby.appendChild(div);
-                });
-            }
-        });
-
-        database.ref('chat').limitToLast(20).on('value', snapshot => {
-            const area = document.getElementById('chat-area');
-            area.innerHTML = '';
-            snapshot.forEach(child => {
-                const msg = child.val();
-                area.innerHTML += `<div class="msg"><strong>${msg.name}:</strong> ${msg.text}</div>`;
-            });
-            area.scrollTop = area.scrollHeight; 
-        });
-
-        database.ref('board').on('value', snapshot => {
-            const area = document.getElementById('board-area');
-            area.innerHTML = '';
-            snapshot.forEach(child => {
-                const msg = child.val();
-                area.innerHTML += `<div class="msg">📌 <strong>${msg.name}:</strong> ${msg.text}</div>`;
-            });
-            area.scrollTop = area.scrollHeight;
-        });
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(() => { alert("登入成功！"); window.location.reload(); })
+            .catch(error => { alert("登入失敗: " + error.message); });
     }
 </script>
 </body>
