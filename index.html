@@ -77,7 +77,6 @@
             margin-top: 8px;
         }
 
-        /* 貓咪大廳虛擬空間 */
         .lobby {
             background: #fffaf0;
             border: 2px dashed var(--primary-color);
@@ -138,7 +137,7 @@
 <div class="container">
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (像素級校正破關版)</p>
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (官方自動對接無敵版)</p>
         <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
@@ -146,7 +145,6 @@
 
     <div id="main-section" class="hidden">
         <h2>貓咪大廳 😺</h2>
-        
         <div class="flex-row">
             <select id="char-select" onchange="updateCharacter()">
                 <option value="🐱">橘貓 🐱</option>
@@ -156,7 +154,6 @@
             </select>
             <button onclick="moveRandomly()">在大廳散步🐾</button>
         </div>
-
         <div class="lobby" id="lobby"></div>
 
         <div class="box-title">💬 即時對話</div>
@@ -166,7 +163,7 @@
             <button onclick="sendChat()">傳送</button>
         </div>
 
-        <div class="box-title">📌 貓咪留言板 (下次來還在)</div>
+        <div class="box-title">📌 貓咪留言板</div>
         <div class="display-area" id="board-area"></div>
         <div class="flex-row">
             <input type="text" id="board-input" placeholder="留下一句話給下次來的人...">
@@ -178,15 +175,15 @@
 </div>
 
 <script>
-    // 拿著放大鏡對照你的截圖，把被網頁偷吃掉、掉包的字母全部抓回來修正！
+    // 拋棄手動金鑰！直接指定正確的後台專案 ID 與正確的亞洲區資料庫網址
     const firebaseConfig = {
         apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
-        databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/",
         projectId: "moew-14789",
-        storageBucket: "moew-14789.firebasestorage.app",
+        storageBucket: "moew-14789.appspot.com",
         messagingSenderId: "849506607849",
-        appId: "1:849506607849:web:76980ce61834100f370678"
+        appId: "1:849506607849:web:76980ce61834100f370678",
+        databaseURL: "https://moew-14789-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
 
     // 初始化 Firebase
@@ -197,14 +194,12 @@
     let currentUser = null;
     let myNickname = "";
 
-    // 監聽登入狀態改變
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
             myNickname = user.email.split('@')[0];
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('main-section').classList.remove('hidden');
-            
             updateCharacter(); 
             listenToFirebase(); 
         } else {
@@ -213,11 +208,9 @@
         }
     });
 
-    // 登入
     function login() {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
-
         auth.signInWithEmailAndPassword(email, password)
             .catch(error => {
                 console.error(error);
@@ -225,31 +218,19 @@
             });
     }
 
-    // 登出
     function logout() {
-        if(currentUser) {
-            database.ref('lobby/' + currentUser.uid).remove(); 
-        }
+        if(currentUser) { database.ref('lobby/' + currentUser.uid).remove(); }
         auth.signOut();
     }
 
-    // 同步貓咪位置與外觀到雲端
     function updateCharacter() {
         if (!currentUser) return;
         const catIcon = document.getElementById('char-select').value;
-        
         const x = Math.floor(Math.random() * 75) + 5;
         const y = Math.floor(Math.random() * 65) + 5;
-
-        database.ref('lobby/' + currentUser.uid).set({
-            name: myNickname,
-            icon: catIcon,
-            x: x,
-            y: y
-        });
+        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: catIcon, x: x, y: y });
     }
 
-    // 在大廳亂晃
     function moveRandomly() {
         if (!currentUser) return;
         const x = Math.floor(Math.random() * 75) + 5;
@@ -257,29 +238,20 @@
         database.ref('lobby/' + currentUser.uid).update({ x: x, y: y });
     }
 
-    // 傳送即時對話
     function sendChat() {
         const text = document.getElementById('chat-input').value;
         if (!text.trim()) return;
-        database.ref('chat').push({
-            name: myNickname,
-            text: text
-        });
+        database.ref('chat').push({ name: myNickname, text: text });
         document.getElementById('chat-input').value = '';
     }
 
-    // 傳送留言板訊息
     function sendBoard() {
         const text = document.getElementById('board-input').value;
         if (!text.trim()) return;
-        database.ref('board').push({
-            name: myNickname,
-            text: text
-        });
+        database.ref('board').push({ name: myNickname, text: text });
         document.getElementById('board-input').value = '';
     }
 
-    // 即時同步雲端資料庫的所有變動
     function listenToFirebase() {
         database.ref('lobby').on('value', snapshot => {
             const lobby = document.getElementById('lobby');
