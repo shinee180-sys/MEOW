@@ -6,7 +6,6 @@
     <title>喵喵專屬秘密大廳 🐾</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;700&display=swap" rel="stylesheet">
     
-    <!-- 引入相容性高的 Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -137,16 +136,14 @@
 <body>
 
 <div class="container">
-    <!-- 登入區塊 -->
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統</p>
-        <input type="email" id="email" placeholder="請輸入登入信箱">
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (除錯增強版)</p>
+        <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
     </div>
 
-    <!-- 遊戲大廳主區塊 -->
     <div id="main-section" class="hidden">
         <h2>貓咪大廳 😺</h2>
         
@@ -160,10 +157,8 @@
             <button onclick="moveRandomly()">在大廳散步🐾</button>
         </div>
 
-        <!-- 虛擬大廳 -->
         <div class="lobby" id="lobby"></div>
 
-        <!-- 即時聊天室 -->
         <div class="box-title">💬 即時對話</div>
         <div class="display-area" id="chat-area"></div>
         <div class="flex-row">
@@ -171,7 +166,6 @@
             <button onclick="sendChat()">傳送</button>
         </div>
 
-        <!-- 永久留言板 -->
         <div class="box-title">📌 貓咪留言板 (下次來還在)</div>
         <div class="display-area" id="board-area"></div>
         <div class="flex-row">
@@ -184,7 +178,7 @@
 </div>
 
 <script>
-    // 這裡已經完美填入你圖片中的專屬金鑰與資料庫網址囉！
+    // Firebase 金鑰配置 (對應專案：moew-14789)
     const firebaseConfig = {
         apiKey: "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
@@ -219,15 +213,25 @@
         }
     });
 
-    // 登入
+    // 登入功能 (加入終極錯誤捕捉彈窗)
     function login() {
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim(); // 自動清除前後空白防呆
         const password = document.getElementById('password').value;
+        
+        if (!email || !password) {
+            alert("信箱跟密碼不可以空著唷！");
+            return;
+        }
+
         auth.signInWithEmailAndPassword(email, password)
-            .catch(error => alert("密碼不對或找不到這個貓咪帳號喔！"));
+            .catch(error => {
+                console.error("登入失敗詳細原因:", error);
+                // 這裡會直接彈出核心死因代碼，讓我們一眼看穿問題
+                alert("⛔ 門禁系統拒絕登入！\n【錯誤代碼】: " + error.code + "\n【錯誤內容】: " + error.message);
+            });
     }
 
-    // 登出
+    // 登出功能
     function logout() {
         if(currentUser) {
             database.ref('lobby/' + currentUser.uid).remove(); 
@@ -248,6 +252,8 @@
             icon: catIcon,
             x: x,
             y: y
+        }).catch(error => {
+            alert("⚠️ 進入大廳失敗！資料庫拒絕寫入。\n原因: " + error.message);
         });
     }
 
@@ -299,6 +305,8 @@
                     lobby.appendChild(div);
                 });
             }
+        }, error => {
+            console.error("讀取大廳資料失敗:", error);
         });
 
         // 2. 同步即時聊天內容（只顯示最新 20 條）
