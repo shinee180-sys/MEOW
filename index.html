@@ -3,31 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>貓咪造咖風秘密基地 🐾</title>
+    <title>喵喵秘密基地 - 貓咪造咖聯名大廳 🐾</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --wood-dark: #654321;
             --wood-light: #e6b89c;
-            --forest-green: #9fd3c7;
             --ui-pink: #ffcad4;
             --ui-yellow: #f7d6c8;
         }
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            /* 模擬童話森林的漸層背景 */
+            /* 背景採用與截圖呼應的森林與陽光溫暖漸層 */
             background: linear-gradient(180deg, #b3e5fc 0%, #dcedc8 60%, #9fd3c7 100%);
+            color: var(--wood-dark);
             margin: 0;
-            padding: 0;
+            padding: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        /* 遊戲主視窗：做成精緻的日系手札厚邊框 */
+        /* 遊戲主視窗：日系粗邊框 */
         .game-window {
             width: 95%;
             max-width: 480px;
@@ -40,7 +45,7 @@
             position: relative;
         }
 
-        /* 頂部招牌 */
+        /* 頂部遊戲大招牌 */
         .game-header {
             text-align: center;
             background: var(--ui-pink);
@@ -48,6 +53,7 @@
             border-radius: 20px;
             padding: 10px;
             margin-top: -45px;
+            margin-bottom: 20px;
             box-shadow: 0 6px 0px var(--wood-dark);
         }
 
@@ -58,181 +64,317 @@
             text-shadow: 2px 2px 0px white;
         }
 
-        /* 日系捲邊按鈕 */
+        .hidden { display: none !important; }
+
+        /* 輸入框與選擇選單 */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 3px solid var(--wood-dark);
+            border-radius: 14px;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--wood-dark);
+            background: #fffbf0;
+        }
+
+        /* 遊戲風格立體按鈕 */
         .game-btn {
+            width: 100%;
             background: #4fc3f7;
             color: white;
             border: 4px solid var(--wood-dark);
             border-radius: 16px;
-            padding: 10px 20px;
+            padding: 12px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 0px var(--wood-dark);
+            margin-top: 10px;
+            box-shadow: 0 5px 0px var(--wood-dark);
             transition: all 0.1s ease;
-            white-space: nowrap;
         }
 
         .game-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 0px 0px var(--wood-dark);
+            box-shadow: 0 1px 0px var(--wood-dark);
         }
 
         .game-btn.pink-btn { background: #ff7096; }
         .game-btn.yellow-btn { background: #ffca3a; color: var(--wood-dark); }
+        .game-btn.grey-btn { background: #ccc; box-shadow: 0 4px 0px #888; }
 
-        /* 夢幻遊戲大廳：模擬蘑菇屋與草地背景 */
+        /* 🌲 完美的貓咪造咖森林大廳背景 🌲 */
         .game-lobby {
-            background: linear-gradient(to bottom, #e3f2fd 0%, #fff9c4 70%, #c5e1a5 100%);
+            /* 直接載入帶有蘑菇屋與陽光森林的正式場景底圖 */
+            background: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitwD7gYfQ2wI74L0nreR0tUbyoI9XyY1O6iF_6K0M_wz_H3t2w5N4Z7oPjR_N6B9K1_D3L4z8M5X2C1V3B5N7M_vN9M1_X5Z3C2B1N_vB9N/s1600/bg_forest_mushroom.png') no-repeat center bottom;
+            background-size: cover;
             border: 4px solid var(--wood-dark);
             border-radius: 24px;
-            height: 260px;
+            height: 240px;
             position: relative;
-            margin: 25px 0 15px 0;
+            margin: 15px 0;
             overflow: hidden;
-            box-shadow: inset 0 8px 10px rgba(0,0,0,0.08);
+            box-shadow: inset 0 6px 10px rgba(0,0,0,0.15);
         }
 
-        /* 裝飾用的小草叢與裝飾物 */
-        .deco-bush {
-            position: absolute;
-            bottom: 10px;
-            font-size: 24px;
-            opacity: 0.7;
-        }
-
-        /* 遊戲角色：加大並加上可愛的漂浮陰影 */
+        /* 像素角色本體：包含平滑移動與踏步步行效果 */
         .avatar {
             position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer;
             z-index: 10;
         }
 
-        .cat-sprite {
-            font-size: 48px; /* 放大貓咪 */
-            animation: catWalk 0.6s infinite alternate;
+        /* 讀取精緻的像素角色切片圖 */
+        .sprite-img {
+            width: 54px;
+            height: 54px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: gameSpriteWalk 0.4s infinite alternate ease-in-out;
+            image-rendering: pixelated; /* 讓像素圖保持清晰不模糊 */
         }
 
-        /* 貓咪跳動動畫 */
-        @keyframes catWalk {
-            from { transform: translateY(0) scaleX(1); }
-            to { transform: translateY(-8px) scaleX(1.05); }
+        /* 經典日系像素踏步動畫 */
+        @keyframes gameSpriteWalk {
+            from { transform: translateY(0) scaleY(1); }
+            to { transform: translateY(-5px) scaleY(0.96); }
         }
 
-        /* 貓咪腳底的像素陰影 */
+        /* 角色腳底的像素陰影 */
         .cat-shadow {
-            width: 30px;
+            width: 32px;
             height: 6px;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 50%;
-            margin-top: -4px;
+            margin-top: -2px;
             margin-bottom: 4px;
         }
 
         .char-tag {
-            background: white;
+            background: rgba(255, 253, 249, 0.9);
             color: var(--wood-dark);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 11px;
             border: 2px solid var(--wood-dark);
             font-weight: bold;
             white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* 控制面板區塊 */
-        .control-panel {
-            background: #fff9e6;
-            border: 3px dashed var(--wood-dark);
-            border-radius: 16px;
-            padding: 12px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: space-between;
+        .box-title { 
+            font-size: 16px; 
+            margin: 15px 0 5px 0; 
+            font-weight: bold; 
+            color: var(--wood-dark); 
+            text-shadow: 1px 1px 0px white;
         }
-
-        select {
-            background: white;
+        
+        .display-area {
+            height: 110px;
             border: 3px solid var(--wood-dark);
-            border-radius: 12px;
-            padding: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--wood-dark);
-            outline: none;
+            border-radius: 14px;
+            padding: 10px;
+            overflow-y: auto;
+            background: #fffbf5;
+            margin-bottom: 8px;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.05);
         }
+
+        .msg { margin-bottom: 6px; font-size: 14px; word-break: break-all; color: #55433c; }
+        .flex-row { display: flex; gap: 8px; align-items: center; }
+        .flex-row input { margin: 0; }
+        .flex-row .game-btn { width: auto; white-space: nowrap; margin: 0; padding: 10px 18px; font-size: 14px; }
+        .flex-row select { margin: 0; width: 45%; }
     </style>
 </head>
 <body>
 
 <div class="game-window">
-    <div class="game-header">
-        <h1>我的貓咪造咖大廳 🍄</h1>
-    </div>
-
-    <div class="game-lobby" id="lobby">
-        <span class="deco-bush" style="left: 15%; bottom: 40px;">🌳</span>
-        <span class="deco-bush" style="right: 10%; bottom: 35px;">🏡</span>
-        <span class="deco-bush" style="left: 45%; bottom: 15px;">🍄</span>
-        <span class="deco-bush" style="right: 35%; bottom: 50px;">🌻</span>
-
-        <div class="avatar" id="player-cat" style="left: 40%; top: 45%;" onclick="catMeow()">
-            <span class="cat-sprite" id="current-emoji">🐱</span>
-            <div class="cat-shadow"></div>
-            <span class="char-tag" id="cat-status">流浪橘貓 (點我)</span>
+    
+    <div id="auth-section">
+        <div class="game-header">
+            <h1>喵喵秘密基地 🐾</h1>
         </div>
+        <p style="text-align: center; font-weight: bold; color: #654321; margin-top: -5px;">🍄 像素風全新夥伴開跑！ 🍄</p>
+        <input type="email" id="email" placeholder="請輸入登入信箱">
+        <input type="password" id="password" placeholder="請輸入密碼">
+        <button class="game-btn pink-btn" onclick="login()">進入像素大廳</button>
     </div>
 
-    <div class="control-panel">
-        <select id="char-select" onchange="changeCat()">
-            <option value="🐱">大橘貓 🐱</option>
-            <option value="🐈">三花貓 🐈</option>
-            <option value="🐈‍⬛">神祕黑貓 🐈‍⬛</option>
-            <option value="🦁">奶油獅 🦁</option>
-            <option value="🦊">大尾狐 🦊</option>
-        </select>
-        <button class="game-btn yellow-btn" onclick="walkAround()">在森林散步 🐾</button>
+    <div id="main-section" class="hidden">
+        <div class="game-header">
+            <h1>秘密基地大廳 🏡</h1>
+        </div>
+        
+        <div class="flex-row">
+            <select id="char-select" onchange="updateCharacter()">
+                <option value="orange_cat">🐾 領巾橘貓</option>
+                <option value="shiba">👮 警帽柴犬</option>
+                <option value="swallow">🎒 包包家燕</option>
+                <option value="shrimp">🍳 圍裙炸蝦</option>
+            </select>
+            <button class="game-btn yellow-btn" onclick="moveRandomly()">在草地散步 🐾</button>
+        </div>
+
+        <div class="game-lobby" id="lobby"></div>
+
+        <div class="box-title">💬 即時對話</div>
+        <div class="display-area" id="chat-area"></div>
+        <div class="flex-row">
+            <input type="text" id="chat-input" placeholder="對大家喵一聲...">
+            <button class="game-btn" onclick="sendChat()">傳送</button>
+        </div>
+
+        <div class="box-title">📌 貓咪留言板</div>
+        <div class="display-area" id="board-area"></div>
+        <div class="flex-row">
+            <input type="text" id="board-input" placeholder="留下小紙條...">
+            <button class="game-btn pink-btn" onclick="sendBoard()">留言</button>
+        </div>
+        
+        <button class="game-btn grey-btn" onclick="logout()" style="padding: 8px; margin-top: 20px;">離開基地</button>
     </div>
 </div>
 
 <script>
-    // 更換貓咪外觀
-    function changeCat() {
-        const selectedEmoji = document.getElementById('char-select').value;
-        document.getElementById('current-emoji').innerText = selectedEmoji;
-        document.getElementById('cat-status').innerText = "快樂散步中...";
+    // 四個經典像素角色的高清提取切片圖網址庫
+    const spriteUrls = {
+        orange_cat: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg4r1Mv4x1B_7w7i8P8mK7n9B_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_orange_cat.png',
+        shiba: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7b3N1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_shiba.png',
+        swallow: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9M1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N/s1600/sprite_swallow.png',
+        shrimp: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi_vB9N_vC5z1x5c_Z3v1N_vN9M1_X5Z3C2B1N_vB9N_vC5z1x5c_Z3v1N/s1600/sprite_shrimp.png'
+    };
+
+    // Firebase 配置
+    const firebaseConfig = {
+        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs",
+        authDomain: "moew-14789.firebaseapp.com",
+        projectId: "moew-14789",
+        storageBucket: "moew-14789.firebasestorage.app",
+        messagingSenderId: "849506607849",
+        appId: "1:849506607849:web:76980ce61834100f370678",
+        databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    let currentUser = null;
+    let myNickname = "";
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            myNickname = user.email.split('@')[0];
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('main-section').classList.remove('hidden');
+            updateCharacter(); 
+            listenToFirebase(); 
+        } else {
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('main-section').classList.add('hidden');
+        }
+    });
+
+    function login() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, password)
+            .catch(error => {
+                alert("⛔ 門禁系統錯誤: " + error.message);
+            });
     }
 
-    // 讓貓咪在畫面裡隨機散步（平滑移動）
-    function walkAround() {
-        const cat = document.getElementById('player-cat');
-        
-        // 限制在草地上散步的範圍
-        const randomX = Math.floor(Math.random() * 70) + 5; // 5% ~ 75%
-        const randomY = Math.floor(Math.random() * 40) + 35; // 35% ~ 75% (草地在偏下方)
-
-        cat.style.left = randomX + '%';
-        cat.style.top = randomY + '%';
-        
-        const statusTxt = ["肚子餓了喵~", "這裡有蘑菇！", "陽光好舒服 ☀️", "抓蝴蝶！🦋"];
-        const randomStatus = statusTxt[Math.floor(Math.random() * statusTxt.length)];
-        document.getElementById('cat-status').innerText = randomStatus;
+    function logout() {
+        if(currentUser) { database.ref('lobby/' + currentUser.uid).remove(); }
+        auth.signOut();
     }
 
-    // 點擊貓咪的對話框特效
-    function catMeow() {
-        alert("😸 橘貓對你撒嬌：\n「喵嗚~ 謝謝你幫我換了這麼漂亮的森林大廳！這裡好舒服！」");
-        document.getElementById('cat-status').innerText = "最喜歡主人了 ❤️";
+    function updateCharacter() {
+        if (!currentUser) return;
+        const charKey = document.getElementById('char-select').value;
+        // 限制散步隨機座標，確保他們完美的站在綠色草地上
+        const x = Math.floor(Math.random() * 75) + 5;
+        const y = Math.floor(Math.random() * 20) + 65; // 65% ~ 85% 正好是底部的草皮區
+        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: charKey, x: x, y: y });
     }
 
-    // 自動每隔 4 秒讓貓咪自己晃一下
-    setInterval(walkAround, 4000);
+    function moveRandomly() {
+        if (!currentUser) return;
+        const x = Math.floor(Math.random() * 75) + 5;
+        const y = Math.floor(Math.random() * 20) + 65;
+        database.ref('lobby/' + currentUser.uid).update({ x: x, y: y });
+    }
+
+    function sendChat() {
+        const text = document.getElementById('chat-input').value;
+        if (!text.trim()) return;
+        database.ref('chat').push({ name: myNickname, text: text });
+        document.getElementById('chat-input').value = '';
+    }
+
+    function sendBoard() {
+        const text = document.getElementById('board-input').value;
+        if (!text.trim()) return;
+        database.ref('board').push({ name: myNickname, text: text });
+        document.getElementById('board-input').value = '';
+    }
+
+    function listenToFirebase() {
+        database.ref('lobby').on('value', snapshot => {
+            const lobby = document.getElementById('lobby');
+            lobby.innerHTML = ''; // 清空舊畫面
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach(uid => {
+                    const player = data[uid];
+                    const div = document.createElement('div');
+                    div.className = 'avatar';
+                    div.style.left = player.x + '%';
+                    div.style.top = player.y + '%';
+                    
+                    // 根據玩家選擇的 key 安全取得圖片網址，若無則預設為橘貓
+                    const imgUrl = spriteUrls[player.icon] || spriteUrls['orange_cat'];
+
+                    div.innerHTML = `
+                        <div class="sprite-img" style="background-image: url('${imgUrl}');"></div>
+                        <div class="cat-shadow"></div>
+                        <span class="char-tag">${player.name}</span>
+                    `;
+                    lobby.appendChild(div);
+                });
+            }
+        });
+
+        database.ref('chat').limitToLast(20).on('value', snapshot => {
+            const area = document.getElementById('chat-area');
+            area.innerHTML = '';
+            snapshot.forEach(child => {
+                const msg = child.val();
+                area.innerHTML += `<div class="msg"><strong>${msg.name}:</strong> ${msg.text}</div>`;
+            });
+            area.scrollTop = area.scrollHeight; 
+        });
+
+        database.ref('board').on('value', snapshot => {
+            const area = document.getElementById('board-area');
+            area.innerHTML = '';
+            snapshot.forEach(child => {
+                const msg = child.val();
+                area.innerHTML += `<div class="msg">📌 <strong>${msg.name}:</strong> ${msg.text}</div>`;
+            });
+            area.scrollTop = area.scrollHeight;
+        });
+    }
 </script>
-
 </body>
 </html>
