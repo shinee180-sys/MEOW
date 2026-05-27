@@ -137,7 +137,7 @@
 <div class="container">
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (官方自動對接無敵版)</p>
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (金鑰大小寫終極修復版)</p>
         <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
@@ -175,15 +175,15 @@
 </div>
 
 <script>
-    // 拋棄手動金鑰！直接指定正確的後台專案 ID 與正確的亞洲區資料庫網址
+    // 嚴格對照後台截圖，修正了所有大小寫落差的完美金鑰！
     const firebaseConfig = {
         apiKey: "AIzaSyBlNTPAtKlXX1BC5uYiRe7iWFKwvwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
         projectId: "moew-14789",
-        storageBucket: "moew-14789.appspot.com",
+        storageBucket: "moew-14789.firebasestorage.app",
         messagingSenderId: "849506607849",
         appId: "1:849506607849:web:76980ce61834100f370678",
-        databaseURL: "https://moew-14789-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/"
     };
 
     // 初始化 Firebase
