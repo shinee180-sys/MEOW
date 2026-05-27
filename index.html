@@ -138,7 +138,7 @@
 <div class="container">
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (校正修復版)</p>
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (官方金鑰正式版)</p>
         <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
@@ -178,14 +178,13 @@
 </div>
 
 <script>
-    // 這裡使用動態補齊技術，確保金鑰結尾字母不會遺漏
-    const baseKey = "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJs";
+    // 依據你傳送的 Firebase 後台截圖一字不漏完整校正！
     const firebaseConfig = {
-        apiKey: baseKey + "Y",
+        apiKey: "AIzaSyBINTAtKlXX1BC5uYiRe7iWFKwvwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
         databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/",
         projectId: "moew-14789",
-        storageBucket: "moew-14789.appspot.com",
+        storageBucket: "moew-14789.firebasestorage.app",
         messagingSenderId: "849506607849",
         appId: "1:849506607849:web:76980ce61834100f370678"
     };
@@ -280,7 +279,7 @@
         document.getElementById('board-input').value = '';
     }
 
-    // 核心：即時同步雲端資料庫的所有變動
+    // 即時同步雲端資料庫的所有變動
     function listenToFirebase() {
         database.ref('lobby').on('value', snapshot => {
             const lobby = document.getElementById('lobby');
