@@ -3,308 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>喵喵專屬秘密大廳 🐾</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;700&display=swap" rel="stylesheet">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
+    <title>貓咪造咖風 - 核心設定檢查清單 🐾</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ffb3c6;
-            --secondary-color: #ffe5ec;
-            --dark-color: #4a3e3d;
-            --bg-color: #fff0f3;
+            --wood-dark: #654321;
+            --wood-light: #e6b89c;
+            --forest-green: #9fd3c7;
+            --ui-pink: #ffcad4;
+            --ui-yellow: #f7d6c8;
         }
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--dark-color);
+            /* 模擬童話森林與天空的漸層背景 */
+            background: linear-gradient(180deg, #b3e5fc 0%, #dcedc8 60%, #9fd3c7 100%);
+            color: var(--wood-dark);
             margin: 0;
-            padding: 0;
+            padding: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        .container {
+        /* 遊戲主視窗：日系手札厚實巧克力色邊框 */
+        .checklist-container {
             width: 95%;
-            max-width: 450px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 24px rgba(255, 179, 198, 0.4);
-            padding: 20px;
-            border: 4px solid var(--primary-color);
+            max-width: 600px;
+            background: #fffdf9;
+            border: 6px solid var(--wood-dark);
+            border-radius: 32px;
+            box-shadow: 0 16px 0px rgba(101, 67, 33, 0.2), 0 20px 30px rgba(0,0,0,0.15);
+            padding: 25px;
             box-sizing: border-box;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: #ff7096;
-            margin-top: 0;
-        }
-
-        .hidden { display: none !important; }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 2px solid var(--secondary-color);
-            border-radius: 12px;
-            box-sizing: border-box;
-            outline: none;
-            font-size: 16px;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-        }
-
-        button {
-            width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .lobby {
-            background: #fffaf0;
-            border: 2px dashed var(--primary-color);
-            border-radius: 16px;
-            min-height: 180px;
             position: relative;
-            margin: 15px 0;
-            overflow: hidden;
         }
 
-        .avatar {
-            position: absolute;
+        /* 頂部遊戲大招牌 */
+        .game-header {
+            text-align: center;
+            background: var(--ui-pink);
+            border: 4px solid var(--wood-dark);
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: -50px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 0px var(--wood-dark);
+        }
+
+        .game-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--wood-dark);
+            text-shadow: 2px 2px 0px white;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 檢查卡片：做成日系遊戲精緻木牌風格 */
+        .check-item {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.4s ease;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            background: #fffbf0;
+            padding: 15px;
+            border-radius: 20px;
+            border: 4px solid var(--wood-dark);
+            box-shadow: 0 6px 0px rgba(101, 67, 33, 0.1);
+            position: relative;
         }
 
-        .cat-icon {
-            font-size: 28px;
-            animation: bounce 0.6s infinite alternate;
+        /* 卡片左側裝飾小圖章 */
+        .check-icon {
+            font-size: 26px;
+            margin-right: 15px;
+            margin-top: -2px;
+            filter: drop-shadow(1px 1px 0px var(--wood-dark));
         }
 
-        .char-name {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 11px;
-            border: 1px solid var(--primary-color);
-            white-space: nowrap;
+        .check-text h2 {
+            margin: 0 0 8px;
+            font-size: 18px;
+            color: var(--wood-dark);
+            text-shadow: 1px 1px 0px white;
         }
 
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-4px); }
+        .check-text p {
+            margin: 0 0 6px 0;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+            word-break: break-all;
         }
 
-        .box-title { font-size: 16px; margin-top: 15px; font-weight: bold; color: #ff7096; }
-        
-        .display-area {
-            height: 120px;
-            border: 2px solid var(--secondary-color);
+        /* 遊戲風藍色連結按鈕 */
+        .action-link {
+            display: inline-block;
+            background: #4fc3f7;
+            color: white !important;
+            border: 3px solid var(--wood-dark);
             border-radius: 12px;
-            padding: 10px;
-            overflow-y: auto;
-            background: #fafafa;
-            margin-bottom: 8px;
+            padding: 6px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 0px var(--wood-dark);
+            margin-top: 5px;
+            transition: all 0.1s ease;
         }
 
-        .msg { margin-bottom: 6px; font-size: 14px; word-break: break-all; }
-        .flex-row { display: flex; gap: 6px; }
-        .flex-row input { margin: 0; }
-        .flex-row button { width: auto; white-space: nowrap; margin: 0; padding: 0 16px; }
+        .action-link:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px var(--wood-dark);
+        }
+
+        /* 裝飾：漂浮的像素小橘貓 */
+        .decor-cat {
+            display: inline-block;
+            font-size: 36px;
+            animation: catBounce 0.6s infinite alternate;
+            vertical-align: middle;
+        }
+
+        .cat-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        @keyframes catBounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-8px); }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="auth-section">
-        <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (金鑰大小寫終極修復版)</p>
-        <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
-        <input type="password" id="password" placeholder="請輸入密碼" onkeydown="if(event.key === 'Enter') login()">
-        <button onclick="login()">進入基地</button>
+    <div class="checklist-container">
+        <div class="game-header">
+            <h1><span class="decor-cat">🐱</span> 秘密基地設定檢查清單 <span class="decor-cat">🍄</span></h1>
+        </div>
+
+        <ul class="checklist">
+            <li class="check-item">
+                <div class="check-icon">✔️</div>
+                <div class="check-text">
+                    <h2>檢查 API Key</h2>
+                    <p>確認網頁程式碼中 firebaseConfig 的 apiKey 是否準確無誤？注意大小寫！</p>
+                </div>
+            </li>
+            <li class="check-item">
+                <div class="check-icon">❔</div>
+                <div class="check-text">
+                    <h2>檢查 Google Cloud 金鑰限制</h2>
+                    <p>您的 apiKey 可能設定了限制。進入 Google Cloud「憑證」，編輯該金鑰，確認「應用程式限制」設為「無」，「API 限制」設為「不要限制金鑰」。</p>
+                    <p><a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="action-link">👉 [點此檢查金鑰限制] 🐾</a></p>
+                </div>
+            </li>
+            <li class="check-item">
+                <div class="check-icon">❔</div>
+                <div class="check-text">
+                    <h2>確認 API 已啟用</h2>
+                    <p>在 Google Cloud 控制台搜尋並啟用「Identity Toolkit API」（Firebase 驗證核心）與「Realtime Database API」。</p>
+                </div>
+            </li>
+        </ul>
+
+        <div class="cat-container">
+            <span class="decor-cat" style="animation-delay: 0.2s;">🐈</span>
+            <span style="font-size: 14px; font-weight: bold; color: var(--wood-dark); margin: 0 10px;">橘貓幫你加油打氣中喵！</span>
+            <span class="decor-cat" style="animation-delay: 0.4s;">🐱</span>
+        </div>
     </div>
 
-    <div id="main-section" class="hidden">
-        <h2>貓咪大廳 😺</h2>
-        <div class="flex-row">
-            <select id="char-select" onchange="updateCharacter()">
-                <option value="🐱">橘貓 🐱</option>
-                <option value="🐈">三花 🐈</option>
-                <option value="🦁">奶油獅 🦁</option>
-                <option value="🐈‍⬛">黑貓 🐈‍⬛</option>
-            </select>
-            <button onclick="moveRandomly()">在大廳散步🐾</button>
-        </div>
-        <div class="lobby" id="lobby"></div>
-
-        <div class="box-title">💬 即時對話</div>
-        <div class="display-area" id="chat-area"></div>
-        <div class="flex-row">
-            <input type="text" id="chat-input" placeholder="對大家喵一聲..." onkeydown="if(event.key === 'Enter') sendChat()">
-            <button onclick="sendChat()">傳送</button>
-        </div>
-
-        <div class="box-title">📌 貓咪留言板</div>
-        <div class="display-area" id="board-area"></div>
-        <div class="flex-row">
-            <input type="text" id="board-input" placeholder="留下一句話給下次來的人..." onkeydown="if(event.key === 'Enter') sendBoard()">
-            <button onclick="sendBoard()">留言</button>
-        </div>
-        
-        <button onclick="logout()" style="background-color: #ccc; margin-top: 15px; padding: 8px;">離開基地</button>
-    </div>
-</div>
-
-<script>
-    // 完美的金鑰與即時資料庫網址配置
-    const firebaseConfig = {
-        apiKey: "AIzaSyBINtPAtlKlXX1BC5uYIRe7iWFkwrwvnJs",
-        authDomain: "moew-14789.firebaseapp.com",
-        projectId: "moew-14789",
-        storageBucket: "moew-14789.firebasestorage.app",
-        messagingSenderId: "849506607849",
-        appId: "1:849506607849:web:76980ce61834100f370678",
-        databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/"
-    };
-
-    // 初始化 Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
-
-    let currentUser = null;
-    let myNickname = "";
-
-    // 監聽使用者登入狀態
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            myNickname = user.email.split('@')[0];
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('main-section').classList.remove('hidden');
-            updateCharacter(); 
-            listenToFirebase(); 
-        } else {
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('main-section').classList.add('hidden');
-        }
-    });
-
-    // 登入邏輯
-    function login() {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        if (!email || !password) {
-            alert("請輸入信箱與密碼！");
-            return;
-        }
-        auth.signInWithEmailAndPassword(email, password)
-            .catch(error => {
-                console.error(error);
-                alert("⛔ 門禁系統拒絕登入！\n【錯誤代碼】: " + error.code + "\n【錯誤內容】: " + error.message);
-            });
-    }
-
-    // 登出邏輯
-    function logout() {
-        if(currentUser) { database.ref('lobby/' + currentUser.uid).remove(); }
-        auth.signOut();
-    }
-
-    // 更新角色外觀與初始隨機座標
-    function updateCharacter() {
-        if (!currentUser) return;
-        const catIcon = document.getElementById('char-select').value;
-        const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 65) + 5;
-        database.ref('lobby/' + currentUser.uid).set({ name: myNickname, icon: catIcon, x: x, y: y });
-    }
-
-    // 隨機在大廳內散步移動
-    function moveRandomly() {
-        if (!currentUser) return;
-        const x = Math.floor(Math.random() * 75) + 5;
-        const y = Math.floor(Math.random() * 65) + 5;
-        database.ref('lobby/' + currentUser.uid).update({ x: x, y: y });
-    }
-
-    // 送出對話訊息
-    function sendChat() {
-        const text = document.getElementById('chat-input').value;
-        if (!text.trim()) return;
-        database.ref('chat').push({ name: myNickname, text: text });
-        document.getElementById('chat-input').value = '';
-    }
-
-    // 送出留言板訊息
-    function sendBoard() {
-        const text = document.getElementById('board-input').value;
-        if (!text.trim()) return;
-        database.ref('board').push({ name: myNickname, text: text });
-        document.getElementById('board-input').value = '';
-    }
-
-    // 接收來自 Firebase Realtime Database 的同步訊號
-    function listenToFirebase() {
-        // 1. 同步大廳內的所有貓咪位置
-        database.ref('lobby').on('value', snapshot => {
-            const lobby = document.getElementById('lobby');
-            lobby.innerHTML = '';
-            const data = snapshot.val();
-            if (data) {
-                Object.keys(data).forEach(uid => {
-                    const player = data[uid];
-                    const div = document.createElement('div');
-                    div.className = 'avatar';
-                    div.style.left = player.x + '%';
-                    div.style.top = player.y + '%';
-                    div.innerHTML = `<span class="cat-icon">${player.icon}</span><span class="char-name">${player.name}</span>`;
-                    lobby.appendChild(div);
-                });
-            }
-        });
-
-        // 2. 同步即時對話（限制顯示最後 20 則）
-        database.ref('chat').limitToLast(20).on('value', snapshot => {
-            const area = document.getElementById('chat-area');
-            area.innerHTML = '';
-            snapshot.forEach(child => {
-                const msg = child.val();
-                area.innerHTML += `<div class="msg"><strong>${msg.name}:</strong> ${msg.text}</div>`;
-            });
-            area.scrollTop = area.scrollHeight; 
-        });
-
-        // 3. 同步留言板
-        database.ref('board').on('value', snapshot => {
-            const area = document.getElementById('board-area');
-            area.innerHTML = '';
-            snapshot.forEach(child => {
-                const msg = child.val();
-                area.innerHTML += `<div class="msg">📌 <strong>${msg.name}:</strong> ${msg.text}</div>`;
-            });
-            area.scrollTop = area.scrollHeight;
-        });
-    }
-</script>
 </body>
 </html>
