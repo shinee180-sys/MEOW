@@ -3,36 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>喵喵秘密基地 - 貓咪造咖聯名大廳 🐾</title>
+    <title>喵喵造咖聯名大廳 🐾</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: '微軟正黑體', sans-serif; background: #dcedc8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .game-window { width: 90%; max-width: 400px; background: white; border: 5px solid #654321; border-radius: 20px; padding: 20px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 2px solid #654321; border-radius: 10px; box-sizing: border-box; }
-        .game-btn { background: #ff7096; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 90%; }
+        body { 
+            font-family: '微軟正黑體', sans-serif; 
+            background: #dcedc8; /* 森林背景色 */
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; 
+        }
+        .game-window { 
+            width: 90%; max-width: 450px; 
+            background: #fffdf5; 
+            border: 6px solid #654321; /* 木質調邊框 */
+            border-radius: 25px; padding: 25px; text-align: center;
+            box-shadow: 0 10px 0 #4a3018;
+        }
+        input, select { 
+            width: 100%; padding: 12px; margin: 10px 0; 
+            border: 3px solid #654321; border-radius: 12px; box-sizing: border-box;
+        }
+        .game-btn { 
+            background: #ff7096; color: white; border: none; 
+            padding: 12px 25px; border-radius: 12px; cursor: pointer; 
+            font-weight: bold; width: 100%; margin-top: 10px;
+        }
         .hidden { display: none !important; }
-        #lobby-section { font-size: 24px; }
+        .lobby-box { 
+            height: 200px; border: 4px solid #8b5a2b; 
+            border-radius: 15px; margin: 15px 0; 
+            overflow: hidden; position: relative; background: #e0f2f1;
+        }
     </style>
 </head>
 <body>
 
 <div class="game-window" id="auth-section">
-    <h1>喵喵秘密基地 🐾</h1>
-    <input type="email" id="email" placeholder="請輸入登入信箱">
-    <input type="password" id="password" placeholder="請輸入密碼">
-    <button class="game-btn" onclick="login()">進入像素大廳</button>
+    <h1>貓咪造咖聯名 🐾</h1>
+    <input type="email" id="email" placeholder="輸入聯名信箱">
+    <input type="password" id="password" placeholder="輸入密碼">
+    <button class="game-btn" onclick="login()">開始冒險</button>
 </div>
 
 <div class="game-window hidden" id="lobby-section">
-    <h1>歡迎來到大廳 😺</h1>
-    <p>貓咪們都在裡面玩耍囉！</p>
-    <button class="game-btn" onclick="logout()" style="background: #aaa;">離開基地</button>
+    <h2>聯名大廳 😺</h2>
+    <select id="char-select" onchange="updateCharacter()">
+        <option value="🐱">橘貓</option>
+        <option value="🐶">柴犬</option>
+        <option value="🐦">燕子</option>
+        <option value="🦐">蝦子</option>
+    </select>
+    <div class="lobby-box" id="lobby"></div>
+    <button class="game-btn" onclick="moveRandomly()">在大廳散步 🐾</button>
+    <button class="game-btn" onclick="logout()" style="background: #888;">離開聯名活動</button>
 </div>
 
 <script>
-    // 嚴格校對過的正確金鑰
     const firebaseConfig = {
         apiKey: "AIzaSyBINtPAtlKlXX1BC5uYIRe7iWFkwrwvnJs",
         authDomain: "moew-14789.firebaseapp.com",
@@ -44,35 +72,45 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    
-    // 核心邏輯：自動監聽登入狀態
-    firebase.auth().onAuthStateChanged((user) => {
-        const authSection = document.getElementById('auth-section');
-        const lobbySection = document.getElementById('lobby-section');
-        
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // 自動切換邏輯
+    auth.onAuthStateChanged(user => {
         if (user) {
-            // 已登入：隱藏登入頁，顯示大廳
-            authSection.classList.add('hidden');
-            lobbySection.classList.remove('hidden');
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('lobby-section').classList.remove('hidden');
+            listenToLobby();
         } else {
-            // 未登入：顯示登入頁，隱藏大廳
-            authSection.classList.remove('hidden');
-            lobbySection.classList.add('hidden');
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('lobby-section').classList.add('hidden');
         }
     });
 
     function login() {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        
-        firebase.auth().signInWithEmailAndPassword(email, password)
-            .catch(error => { 
-                alert("登入失敗: " + error.message); 
-            });
+        auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
+            .catch(e => alert("登入失敗: " + e.message));
     }
 
-    function logout() {
-        firebase.auth().signOut();
+    function logout() { auth.signOut(); }
+
+    function updateCharacter() {
+        const icon = document.getElementById('char-select').value;
+        db.ref('lobby/' + auth.currentUser.uid).set({ name: "造咖夥伴", icon, x: 50, y: 50 });
+    }
+
+    function moveRandomly() {
+        db.ref('lobby/' + auth.currentUser.uid).update({ x: Math.random()*80, y: Math.random()*70 });
+    }
+
+    function listenToLobby() {
+        db.ref('lobby').on('value', snap => {
+            const lobby = document.getElementById('lobby'); lobby.innerHTML = '';
+            snap.forEach(s => {
+                const p = s.val();
+                lobby.innerHTML += `<div style="position:absolute; left:${p.x}%; top:${p.y}%; font-size: 30px;">${p.icon}</div>`;
+            });
+        });
     }
 </script>
 </body>
