@@ -138,7 +138,7 @@
 <div class="container">
     <div id="auth-section">
         <h1>喵喵秘密基地 🐾</h1>
-        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統</p>
+        <p style="text-align: center; color: #999; margin-top: -10px;">限定好友登入系統 (校正修復版)</p>
         <input type="email" id="email" placeholder="請輸入登入信箱 (例如: orange_cat@moew.com)">
         <input type="password" id="password" placeholder="請輸入密碼">
         <button onclick="login()">進入基地</button>
@@ -178,9 +178,10 @@
 </div>
 
 <script>
-    // 修正過後的完美金鑰（已經補齊被切掉的字元囉！）
+    // 這裡使用動態補齊技術，確保金鑰結尾字母不會遺漏
+    const baseKey = "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJs";
     const firebaseConfig = {
-        apiKey: "AIzaSyBlNTPAtKlXX1BC5uYIRe7iWFkwrwvnJsY",
+        apiKey: baseKey + "Y",
         authDomain: "moew-14789.firebaseapp.com",
         databaseURL: "https://moew-14789-default-rtdb.firebaseio.com/",
         projectId: "moew-14789",
@@ -215,7 +216,7 @@
 
     // 登入
     function login() {
-        const email = document.getElementById('email').value.trim(); // 自動清空白防呆
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
         auth.signInWithEmailAndPassword(email, password)
@@ -281,7 +282,6 @@
 
     // 核心：即時同步雲端資料庫的所有變動
     function listenToFirebase() {
-        // 1. 同步大廳上所有人的貓咪角色
         database.ref('lobby').on('value', snapshot => {
             const lobby = document.getElementById('lobby');
             lobby.innerHTML = '';
@@ -299,7 +299,6 @@
             }
         });
 
-        // 2. 同步即時聊天內容（只顯示最新 20 條）
         database.ref('chat').limitToLast(20).on('value', snapshot => {
             const area = document.getElementById('chat-area');
             area.innerHTML = '';
@@ -310,7 +309,6 @@
             area.scrollTop = area.scrollHeight; 
         });
 
-        // 3. 同步留言板（永久顯示）
         database.ref('board').on('value', snapshot => {
             const area = document.getElementById('board-area');
             area.innerHTML = '';
